@@ -4,7 +4,7 @@
 {% block content %}
 <div class="content">
     <br>
-    <form method="POST">{% csrf_token %}
+    <form enctype="multipart/form-data" action="{% url 'home' %}" method="POST">{% csrf_token %}
         {% for field in form %}
             {% if field.label == "画像を選択" %}
                 <label for="id_tgtImg" class="filelabel">{{ field.label }}</label>
@@ -28,8 +28,8 @@
             {% endif %}
             <br><br>
         {% endfor %}
+        <button type="submit" class="Button-style">つくる</button>
     </form>
-    <button class="Button-style" id="createBtn">つくる</button>
     <br><br>
 </div>
 {% endblock %}
