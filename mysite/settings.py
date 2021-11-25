@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mojicollage.apps.MojicollageConfig'
+    'mojicollage.apps.MojicollageConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

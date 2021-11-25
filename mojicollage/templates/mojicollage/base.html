@@ -1,0 +1,18 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>MojiM</title>
+        <link href="//db.onlinewebfonts.com/c/02b58c959a917f917b442d2f948b7d09?family=Luthier+It" rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static 'css/mojicollage.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </head>
+    <body class="page-body">
+        <div class="page-header">
+            <h1><a href="{% url 'home' %}">MojiM</a></h1>
+        </div>
+        {% block content %}
+        {% endblock %}
+        <script src="{% static 'js/mojicollage.js' %}"></script>
+    </body>
+</html>

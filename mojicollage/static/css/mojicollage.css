@@ -1,0 +1,41 @@
+.page-body {
+    background-color: #1f0352;
+    margin: 0;
+}
+.page-header {
+    background-image: url('../img/header_background.png');
+    margin-top: 0;
+    padding: 30px 30px 30px 40px;
+}
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    color: #f81111;
+    font-size: 38pt;
+    text-decoration: none;
+    font-family: 'Luthier It';
+}
+.content {
+    text-align: center;
+    color: #fcefef;
+}
+.filelabel{
+    position: relative;
+    background-color: #1f0352;
+    color: #fcefef;
+    font-size: 14px;
+    padding: 4px 30px;
+    border-style: groove;
+    border-width: 5px;
+}
+.fileinput{
+    display: none;
+}
+.Button-style{
+    position: relative;
+    background-color: #1f0352;
+    color: #f81111;
+    font-size: 28px;
+    padding: 4px 20px;
+    border-style: groove;
+    border-width: 18px;
+    border-color: #f81111;
+}

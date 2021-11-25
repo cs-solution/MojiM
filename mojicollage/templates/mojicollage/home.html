@@ -1,0 +1,35 @@
+{% extends 'mojicollage/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="content">
+    <br>
+    <form method="POST">{% csrf_token %}
+        {% for field in form %}
+            {% if field.label == "画像を選択" %}
+                <label for="id_tgtImg" class="filelabel">{{ field.label }}</label>
+                {{ form.tgtImg | add_class:'fileinput'}}
+                <p><canvas id="preview" style="max-width:200px;"></canvas></p>
+                {{ field.errors }}
+            {% elif field.label == "女の子の性格" %}
+                {{ field.label }}:
+                <span id="seikaku-value"></span></label> {{ field }}
+                {{ field.errors }}
+            {% elif field.label == "女の子の話し方" or field.label == "射精" %}
+                {{ field.label }}:
+                {% for choice in field %}
+                    <label>{{ choice.tag }}{{ choice.choice_label }}</label>
+　　         　 {% endfor %}
+                {{ field.errors }}
+            {% else %}
+                {{ field.label }}:
+                {{ field }}
+                {{ field.errors }}
+            {% endif %}
+            <br><br>
+        {% endfor %}
+    </form>
+    <button class="Button-style" id="createBtn">つくる</button>
+    <br><br>
+</div>
+{% endblock %}
