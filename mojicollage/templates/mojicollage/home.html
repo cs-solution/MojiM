@@ -4,7 +4,7 @@
 {% block content %}
 <div class="content">
     <br>
-    <form enctype="multipart/form-data" action="{% url 'home' %}" method="POST">{% csrf_token %}
+    <form enctype="multipart/form-data" action="{% url 'result' %}" method="POST">{% csrf_token %}
         {% for field in form %}
             {% if field.label == "画像を選択" %}
                 <label for="id_tgtImg" class="filelabel">{{ field.label }}</label>

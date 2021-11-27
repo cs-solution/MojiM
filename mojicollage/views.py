@@ -1,18 +1,28 @@
 from django.shortcuts import render
 from .forms import createInfo
+from django.core.files.storage import default_storage
+from django.conf import settings
+import os
 
 # Create your views here.
 
 def home(request):
-    if request.method == "POST":
-        form = createInfo(request.POST, request.FILES)
-        return render(request, 'mojicollage/home.html', {'form': form})
-    else:
-        initial_dict = {
-            'tgtSeikaku':'3',
-            'tgtKeigo':'0',
-            'finish':'0',
-        }
-        form = createInfo(request.POST or None, initial=initial_dict)
-        return render(request, 'mojicollage/home.html', {'form': form})
+    initial_dict = {
+        'tgtSeikaku':'3',
+        'tgtKeigo':'0',
+        'finish':'1',
+    }
+    form = createInfo(initial=initial_dict)
+    return render(request, 'mojicollage/home.html', {'form': form})
 
+def result(request):
+    form = createInfo(request.POST, request.FILES)
+    if form.is_valid() and form.errors.__len__()==0:
+        img = form.files['tgtImg']
+        tmpRelPath = os.path.relpath(settings.TMP_ROOT, settings.BASE_DIR)
+        tmpRelFileName = default_storage.save(tmpRelPath+"/"+img.name, img)
+        
+        imgUrl = "/"+default_storage.url(tmpRelFileName)
+        return render(request, 'mojicollage/result.html', {'imgUrl': imgUrl})
+    return render(request, 'mojicollage/home.html', {'form': form})
+        

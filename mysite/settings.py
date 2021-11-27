@@ -121,3 +121,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+"""一時用フォルダ"""
+TMP_URL = '/wk/'
+TMP_ROOT = os.path.join(BASE_DIR, 'wk')
