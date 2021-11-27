@@ -19,10 +19,10 @@ def result(request):
     form = createInfo(request.POST, request.FILES)
     if form.is_valid() and form.errors.__len__()==0:
         img = form.files['tgtImg']
-        tmpRelPath = os.path.relpath(settings.TMP_ROOT, settings.BASE_DIR)
-        tmpRelFileName = default_storage.save(tmpRelPath+"/"+img.name, img)
+        tmpFolderName = "wk/"
+        tmpFileName = default_storage.save(tmpFolderName+img.name, img)
         
-        imgUrl = "/"+default_storage.url(tmpRelFileName)
-        return render(request, 'mojicollage/result.html', {'imgUrl': imgUrl})
+        tmpImgUrl = default_storage.url(tmpFileName)
+        return render(request, 'mojicollage/result.html', {'imgUrl': tmpImgUrl})
     return render(request, 'mojicollage/home.html', {'form': form})
         
