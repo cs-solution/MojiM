@@ -5,7 +5,7 @@
 .page-header {
     background-image: url('../img/header_background.png');
     margin-top: 0;
-    padding: 30px 30px 30px 40px;
+    padding: 28px 30px 28px 40px;
 }
 .page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
     color: #f81111;
@@ -39,12 +39,22 @@
     border-width: 18px;
     border-color: #f81111;
 }
-.Back-Button-style{
+.Button-style-result{
     position: relative;
     background-color: #1f0352;
     color: #f81111;
     font-size: 20px;
     padding: 8px 80px;
+    border-style: groove;
+    border-width: 18px;
+    border-color: #f81111;
+}
+.Button-style-GoToHome{
+    position: relative;
+    background-color: #1f0352;
+    color: #f81111;
+    font-size: 20px;
+    padding: 15px 200px;
     border-style: groove;
     border-width: 18px;
     border-color: #f81111;

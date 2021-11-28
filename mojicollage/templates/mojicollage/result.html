@@ -6,7 +6,10 @@
     <br>
     <img src="{{ imgUrl }}" class="result-Img">
     <br><br>
-    <button class="Back-Button-style" onclick="history.back()">戻る</button>
+    <button class="Button-style-result" onclick="history.back()">←前へ</button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="Button-style-result" onclick="window.location.reload()">更新→</button>
     <br><br>
+    <button class="Button-style-GoToHome" onclick="location.href='{% url 'home' %}'">ホームへ戻る</button>
 </div>
 {% endblock %}

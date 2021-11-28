@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from .forms import createInfo
 from django.core.files.storage import default_storage
-from django.conf import settings
-import os
 
 # Create your views here.
 
