@@ -16,6 +16,7 @@
 .content {
     text-align: center;
     color: #fcefef;
+    font-size: 18px;
 }
 .filelabel{
     position: relative;
@@ -38,6 +39,16 @@
     border-style: groove;
     border-width: 18px;
     border-color: #f81111;
+}
+.Button-style:disabled{
+    position: relative;
+    background-color: #1f0352;
+    color: #b6b6b6;
+    font-size: 28px;
+    padding: 8px 80px;
+    border-style: groove;
+    border-width: 18px;
+    border-color: #b6b6b6;
 }
 .Button-style-result{
     position: relative;

@@ -36,5 +36,6 @@ $("#id_tgtImg").on("change", function() {
             });
         });
         fileReader.readAsDataURL(document.getElementById('id_tgtImg').files[0]);
+        document.querySelector("button").disabled = false;
     }    
 }); 
