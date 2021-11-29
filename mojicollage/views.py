@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .forms import createInfo
 from django.core.files.storage import default_storage
+from .collage import createCollage
 
 # Create your views here.
 
@@ -20,7 +21,8 @@ def result(request):
         tmpFolderName = "wk/"
         tmpFileName = default_storage.save(tmpFolderName+img.name, img)
         
+        createCollage(tmpFileName)
+
         tmpImgUrl = default_storage.url(tmpFileName)
         return render(request, 'mojicollage/result.html', {'imgUrl': tmpImgUrl})
     return render(request, 'mojicollage/home.html', {'form': form})
-        
