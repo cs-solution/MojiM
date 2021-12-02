@@ -1,66 +1,59 @@
 from django.conf import settings
 from PIL import Image, ImageDraw, ImageFont
 from .const import *
-import os
+from .GeomCalcUtil import *
 import cv2
-import random
-import string
 
 def createCollage(inputFileName, imgKey):
-    """作成メイン処理：作業用フォルダのファイル名、キー、拡張子"""
+    """作成メイン処理：作業用フォルダのファイル名、キー"""
     
-    face_list = GetFaceXY(inputFileName, imgKey)
+    # 顔情報取得
+    faceInfoList = getFaceInfo(inputFileName, imgKey)
 
-    # 顔の取得に失敗した場合、何もしないで終了
-    if face_list is None:
+    # 顔の取得に失敗したor顔が多すぎる場合、何もしないで終了
+    if faceInfoList is None:
         return
 
+    # 画像を開く
     img = Image.open(settings.MEDIA_ROOT + '/' + inputFileName)
     draw = ImageDraw.Draw(img)
 
-    samplemoji =  '日本語のサンプルMoji♡！！？？!?'
 
-    # ----------------------  文字  ----------------------------
-    moji = samplemoji
-    # ----------------------  色  ------------------------------
-    textRGB = DEEP_PINK
-    # ----------------------  サイズ  --------------------------
-    textSize = 64
-    # ----------------------  フォント  ------------------------
-    fnt = ImageFont.truetype(settings.MEDIA_ROOT + '/Font/' + KFHIMAJI, textSize)
-    # ----------------------  座標  ----------------------------
-    x, y = getMidPointSt(img, draw, samplemoji, fnt)
+    faceArea = unionFaceArea(faceInfoList)
+    getEmptySpace(img, faceArea)
+
+    # ----------------------  スコア計算  ------------------------------
+    # アスペクト比に基づくスコア計算
+    # 面積に基づくスコア計算
+
+
+
+    # ----------------------  設定する文字  ----------------------------
+    moji = '日本語のサンプルMoji♡！！？？!?'
+    # ----------------------  文字色  ----------------------------------
+    mojiRGB = DEEP_PINK
+    # ----------------------  文字の大きさ  ----------------------------
+    mojiSize = 64
+    # ----------------------  文字の種類  ------------------------------
+    mojiKind = KFHIMAJI
+    # ----------------------  フォント  --------------------------------
+    fnt = getFnt(mojiKind, mojiSize)
+    # ----------------------  座標  ------------------------------------
+    midSt = getMidPointSt(img, draw, moji, fnt)
     
     # ----------------------  描画  ----------------------------
-    drawText(draw, x, y, moji, textRGB, fnt, 'black')
+    drawText(draw, midSt.x, midSt.y, moji, mojiRGB, fnt, 'black')
 
     # 保存
     img.save(settings.MEDIA_ROOT + '/' + inputFileName, quality=95)
 
-
-def getMidPoint(img):
-    """画像全体の中点"""
-    x = img.size[0] / 2
-    y = img.size[1] / 2
-    return x, y
-
-
-def getMidPointSt(img, draw, moji, fnt):
-    """中心に文字が来る時の始点"""
-    draw_text_width, draw_text_height = draw.textsize(moji, font=fnt)
-    x, y = getMidPoint(img)
-    x = x - draw_text_width / 2
-    y = y - draw_text_height / 2
-    return x, y
-
-
-def drawText(draw, x, y, moji, textRGB, fnt, fuchi):
+def drawText(draw, x, y, moji, mojiRGB, fnt, fuchi):
     """描画"""
     if fuchi != '':
         # 文字のふちあり
         draw.text((x, y), 
             moji,
-            fill=textRGB,
+            fill=mojiRGB,
             font=fnt,
             stroke_width=4,
             stroke_fill=fuchi)
@@ -68,11 +61,11 @@ def drawText(draw, x, y, moji, textRGB, fnt, fuchi):
         # 文字のふちなし
         draw.text((x, y), 
             moji,
-            fill=textRGB,
+            fill=mojiRGB,
             font=fnt,)
 
 
-def GetFaceXY(inputFileName, imgKey):
+def getFaceInfo(inputFileName, imgKey):
     """顔を検出"""
 
     #カスケード分類器の特徴量を取得する
@@ -81,50 +74,37 @@ def GetFaceXY(inputFileName, imgKey):
     imgCv2_gray = cv2.cvtColor(imgCv2, cv2.COLOR_BGR2GRAY)
     
     # region 物体認識（顔認識）の実行
-    #image – CV_8U 型の行列．ここに格納されている画像中から物体が検出されます
-    #  →　なぜかグレースケール画像で指定
-    #objects – 矩形を要素とするベクトル．それぞれの矩形は，検出した物体を含みます
-    #scaleFactor – 各画像スケールにおける縮小量を表します 
+    # ↓↓↓↓↓引数↓↓↓↓↓
+    # image – CV_8U 型の行列．ここに格納されている画像中から物体が検出されます
+    #  →　処理を高速にするためグレースケール画像で指定
+    # objects – 矩形を要素とするベクトル．それぞれの矩形は，検出した物体を含みます
+    # scaleFactor – 各画像スケールにおける縮小量を表します 
     #  →　大きいほど誤検知が多く、小さいほど未検出が多い
-    #minNeighbors – 物体候補となる矩形は，最低でもこの数だけの近傍矩形を含む必要があります
+    # minNeighbors – 物体候補となる矩形は，最低でもこの数だけの近傍矩形を含む必要があります
     #  →　大きいほど信頼性が上がるが、顔を見逃してしまう率も高くなる。
-    #flags – このパラメータは，新しいカスケードでは利用されません．古いカスケードに対しては，cvHaarDetectObjects 関数の場合と同じ意味を持ちます
-    #minSize – 物体が取り得る最小サイズ．これよりも小さい物体は無視されます
+    # flags – このパラメータは，新しいカスケードでは利用されません．古いカスケードに対しては，cvHaarDetectObjects 関数の場合と同じ意味を持ちます
+    # minSize – 物体が取り得る最小サイズ．これよりも小さい物体は無視されます
     #  →　これより小さい顔は無視される
+    # ↓↓↓↓↓戻り値↓↓↓↓↓
+    # face_list = [0:左上のx座標; 1:左上のy座標; 2:横幅; 3:縦;]のリスト
     # endregion
-    face_list = cascade.detectMultiScale(imgCv2_gray, scaleFactor=1.1, minNeighbors=2, minSize=(30, 30))
+    face_list = cascade.detectMultiScale(imgCv2_gray, scaleFactor=1.1, minNeighbors=2, minSize=(80, 80))
     
-    if len(face_list) == 0:
+    if len(face_list) == 0 or len(face_list) > 3:
         return
 
-    #検出した顔を囲む矩形の作成
+    # FaceInfo作成
+    faceInfoList = []
     for rect in face_list:
-        cv2.rectangle(imgCv2, tuple(rect[0:2]),tuple(rect[0:2]+rect[2:4]), (255, 255, 255), thickness=2)
-    
-    #検出結果の保存(デバッグ用)
+        faceInfo=FaceInfo(rect)
+        faceInfoList.append(faceInfo)
+
+    # 検出した顔を囲む矩形の作成(デバッグ用)
+    for rect in face_list:
+        cv2.rectangle(imgCv2, tuple(rect[0:2]), tuple(rect[0:2]+rect[2:4]), (255, 255, 255), thickness=2)
     cv2.imwrite(settings.MEDIA_ROOT + '/wk/face_' + imgKey + '.jpg', imgCv2)
 
-    return face_list
+    return faceInfoList
 
-
-
-def GetRandomStr(num):
-    """ランダムな文字列の生成"""
-    # 英数字をすべて取得
-    dat = string.digits + string.ascii_lowercase + string.ascii_uppercase
-    # 英数字からランダムに取得
-    return ''.join([random.choice(dat) for i in range(num)])
-
-def SaveTmp(saveFileName, imgKey):
-    """作業用フォルダにコピーを作成（ファイル形式を.jpgに統一）"""
-    img = Image.open(settings.MEDIA_ROOT + '/' + saveFileName)
-    path, ext = os.path.splitext(saveFileName)
-    if ext is not None:
-        ext = ext.lower()    
-    # pngの場合、jpgに変換
-    if ext == '.png':
-        img = img.convert('RGB')
-    
-    tmpFileName = 'wk/' + imgKey + '.jpg'
-    img.save(settings.MEDIA_ROOT + '/' + tmpFileName, quality=95)
-    return tmpFileName
+def getFnt(mojiKind, mojiSize):
+    return ImageFont.truetype(settings.MEDIA_ROOT + '/Font/' + mojiKind, mojiSize)

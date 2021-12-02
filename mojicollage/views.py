@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from .forms import createInfo
 from django.core.files.storage import default_storage
-from .collage import createCollage, GetRandomStr, SaveTmp
-
-# Create your views here.
+from .collage import createCollage
+from .FileUtil import *
 
 def home(request):
     """ホーム画面"""
@@ -21,11 +20,11 @@ def result(request):
     if form.is_valid() and form.errors.__len__()==0:
         img = form.files['tgtImg']
         # キー発行
-        imgKey = GetRandomStr(10)
+        imgKey = createKey(10)
         # 保存用フォルダに保存（キー＋'_'＋原本ファイル名）
         saveFileName = default_storage.save(imgKey+'_' + img.name, img)
         # 作業用フォルダにコピーを作成
-        tmpFileName = SaveTmp(saveFileName, imgKey)
+        tmpFileName = saveTmp(saveFileName, imgKey)
         
         createCollage(tmpFileName, imgKey)
 

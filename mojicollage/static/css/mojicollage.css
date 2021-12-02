@@ -70,6 +70,10 @@
     border-width: 18px;
     border-color: #f81111;
 }
-.result-Img{
+
+.result-Img-1{
     width: 100vw;
+}
+.result-Img-2{
+    height: 50vw;
 }
