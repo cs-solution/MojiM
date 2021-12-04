@@ -2,6 +2,7 @@ from django.conf import settings
 from PIL import Image, ImageDraw
 from .const import *
 from .GeomCalcUtil import *
+from .DBUtil import *
 import cv2
 import random
 
@@ -12,7 +13,7 @@ def createCollage(inputFileName, imgKey):
     # ----------------------  顔情報取得  ------------------------------
     faceInfoList = getFaceInfo(inputFileName, imgKey)
     if faceInfoList is None:
-        # 顔の取得に失敗したor顔が多すぎる場合、何もしないで終了
+        # 顔の取得に失敗した場合、何もしないで終了
         return
 
     # 画像を開く
@@ -31,7 +32,12 @@ def createCollage(inputFileName, imgKey):
 
     mojiBox1 = mojiBoxList[0]
     # ----------------------  設定する文字  ----------------------------
-    mojiBox1.moji = '日本語の\nサンプルMoji♡！！？？!?\n3行目ああああああああ\n4gyoume\n5\n6\nなななななななななななななななななななななななな'
+    con = connect()
+    res = getData(con, 'SELECT * FROM serif ORDER BY random() LIMIT 1;')
+    if res is None or len(res) == 0:
+        # 文字の取得に失敗した場合、何もしないで終了
+        return
+    mojiBox1.moji = res[0][1]
     mojiBox1.setMojiDivision()
     # ----------------------  文字色  ----------------------------------
     mojiBox1.mojiRGB = PINK
@@ -86,7 +92,7 @@ def getFaceInfo(inputFileName, imgKey):
     # endregion
     face_list = cascade.detectMultiScale(imgCv2_gray, scaleFactor=1.1, minNeighbors=2, minSize=(80, 80))
     
-    if len(face_list) == 0 or len(face_list) > 3:
+    if len(face_list) == 0:
         return
 
     # FaceInfo作成

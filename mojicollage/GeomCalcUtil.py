@@ -67,6 +67,7 @@ class MojiBoxInfo(ElementInfo):
 
     def setMojiDivision(self):
         """文字を改行で分割"""
+        self.moji = self.moji.replace('\\n', '\n')
         self.mojiDivision = self.moji.splitlines()
 
     def getMojiSize(self):
@@ -158,11 +159,3 @@ def getMidPoint(e):
     return Point((e.max.x + e.min.x) / 2, (e.max.y + e.min.y)  / 2)
 
 
-# ↓↓↓↓↓↓↓↓↓↓↓多分使わない↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-def getMidPointSt(imgInfo, draw, mojiBoxInfo):
-    """画像の中心に文字が来る時の始点 PIL"""
-    draw_text_width, draw_text_height = draw.textsize(mojiBoxInfo.moji, font=mojiBoxInfo.fnt)
-    mid = getMidPoint(imgInfo)
-    x = mid.x - draw_text_width / 2
-    y = mid.y - draw_text_height / 2
-    return Point(x, y)
